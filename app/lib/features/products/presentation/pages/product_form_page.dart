@@ -27,7 +27,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
     setState(() => _isSubmitting = true);
 
-    final sku = DateTime.now().millisecondsSinceEpoch.toString(); // Geração simples de SKU
+    final sku = DateTime.now().millisecondsSinceEpoch.toString();
     final product = ProductModel(
       sku: sku,
       name: _nameController.text.trim(),
@@ -35,20 +35,35 @@ class _ProductFormPageState extends State<ProductFormPage> {
       weight: double.tryParse(_weightController.text.trim()) ?? 0,
       brand: _brandController.text.trim(),
       fabricante: _fabricanteController.text.trim(),
-      categories: _categoriesController.text
-          .split(',')
-          .map((e) => e.trim())
-          .where((e) => e.isNotEmpty)
-          .toList(),
-      image: _imageController.text.trim().isEmpty ? null : _imageController.text.trim(),
+      categories:
+          _categoriesController.text
+              .split(',')
+              .map((e) => e.trim())
+              .where((e) => e.isNotEmpty)
+              .toList(),
+      image:
+          _imageController.text.trim().isEmpty
+              ? null
+              : _imageController.text.trim(),
     );
 
-    await context.read<ProductController>().add(product);
+    try {
+      await context.read<ProductController>().add(product);
 
-    setState(() => _isSubmitting = false);
-
-    if (context.mounted) {
+      if (!mounted) return;
       Navigator.pop(context);
+    } catch (e, stack) {
+      debugPrint('Erro ao salvar produto: $e');
+      debugPrintStack(stackTrace: stack);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao salvar produto: $e')));
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
     }
   }
 
@@ -77,52 +92,72 @@ class _ProductFormPageState extends State<ProductFormPage> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Nome'),
-                validator: (value) => value == null || value.isEmpty ? 'Informe o nome' : null,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? 'Informe o nome'
+                            : null,
               ),
               TextFormField(
                 controller: _eanController,
                 decoration: const InputDecoration(labelText: 'EAN'),
                 keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Informe o EAN' : null,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty ? 'Informe o EAN' : null,
               ),
               TextFormField(
                 controller: _weightController,
                 decoration: const InputDecoration(labelText: 'Peso (g ou ml)'),
                 keyboardType: TextInputType.number,
-                validator: (value) =>
-                    double.tryParse(value ?? '') == null ? 'Informe um peso válido' : null,
+                validator:
+                    (value) =>
+                        double.tryParse(value ?? '') == null
+                            ? 'Informe um peso válido'
+                            : null,
               ),
               TextFormField(
                 controller: _brandController,
                 decoration: const InputDecoration(labelText: 'Marca'),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Informe a marca' : null,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? 'Informe a marca'
+                            : null,
               ),
               TextFormField(
                 controller: _fabricanteController,
                 decoration: const InputDecoration(labelText: 'Fabricante'),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Informe o fabricante' : null,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? 'Informe o fabricante'
+                            : null,
               ),
               TextFormField(
                 controller: _categoriesController,
                 decoration: const InputDecoration(
                   labelText: 'Categorias (separadas por vírgula)',
                 ),
-                validator: (value) =>
-                    value == null || value.trim().isEmpty ? 'Informe ao menos uma categoria' : null,
+                validator:
+                    (value) =>
+                        value == null || value.trim().isEmpty
+                            ? 'Informe ao menos uma categoria'
+                            : null,
               ),
               TextFormField(
                 controller: _imageController,
-                decoration: const InputDecoration(labelText: 'URL da Imagem (opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'URL da Imagem (opcional)',
+                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _isSubmitting ? null : _submit,
-                child: _isSubmitting
-                    ? const CircularProgressIndicator()
-                    : const Text('Salvar Produto'),
+                child:
+                    _isSubmitting
+                        ? const CircularProgressIndicator()
+                        : const Text('Salvar Produto'),
               ),
             ],
           ),

@@ -42,9 +42,9 @@ class _NoteFormPageState extends State<NoteFormPage> {
   void _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecione a data da nota')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Selecione a data da nota')));
       return;
     }
 
@@ -54,7 +54,10 @@ class _NoteFormPageState extends State<NoteFormPage> {
       key: _keyController.text.trim(),
       date: _selectedDate!,
       supplier: _supplierController.text.trim(),
-      shop: _shopController.text.trim().isEmpty ? null : _shopController.text.trim(),
+      shop:
+          _shopController.text.trim().isEmpty
+              ? null
+              : _shopController.text.trim(),
       discount: double.tryParse(_discountController.text.trim()) ?? 0,
       taxes: double.tryParse(_taxesController.text.trim()) ?? 0,
       shipping: double.tryParse(_shippingController.text.trim()) ?? 0,
@@ -63,13 +66,20 @@ class _NoteFormPageState extends State<NoteFormPage> {
 
     try {
       await context.read<NoteController>().add(note);
-      if (context.mounted) Navigator.pop(context);
+
+      if (!mounted) return; // ✅ Verificação antes de usar o context
+
+      Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao salvar nota: $e')),
-      );
+      if (!mounted) return; // ✅ Verificação antes de usar o context
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao salvar nota: $e')));
     } finally {
-      setState(() => _isSubmitting = false);
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
     }
   }
 
@@ -97,9 +107,11 @@ class _NoteFormPageState extends State<NoteFormPage> {
               TextFormField(
                 controller: _keyController,
                 decoration: const InputDecoration(labelText: 'Chave da Nota'),
-                validator: (value) => value == null || value.isEmpty
-                    ? 'Informe a chave da nota'
-                    : null,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? 'Informe a chave da nota'
+                            : null,
               ),
               const SizedBox(height: 12),
               GestureDetector(
@@ -108,12 +120,14 @@ class _NoteFormPageState extends State<NoteFormPage> {
                   child: TextFormField(
                     decoration: InputDecoration(
                       labelText: 'Data da Nota',
-                      hintText: _selectedDate == null
-                          ? 'Selecione a data'
-                          : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
+                      hintText:
+                          _selectedDate == null
+                              ? 'Selecione a data'
+                              : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
                     ),
-                    validator: (_) =>
-                        _selectedDate == null ? 'Selecione a data' : null,
+                    validator:
+                        (_) =>
+                            _selectedDate == null ? 'Selecione a data' : null,
                   ),
                 ),
               ),
@@ -121,51 +135,68 @@ class _NoteFormPageState extends State<NoteFormPage> {
               TextFormField(
                 controller: _supplierController,
                 decoration: const InputDecoration(labelText: 'Fornecedor'),
-                validator: (value) => value == null || value.isEmpty
-                    ? 'Informe o fornecedor'
-                    : null,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? 'Informe o fornecedor'
+                            : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _shopController,
-                decoration: const InputDecoration(labelText: 'Loja do Marketplace (opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Loja do Marketplace (opcional)',
+                ),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _discountController,
-                decoration: const InputDecoration(labelText: 'Desconto Geral (opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Desconto Geral (opcional)',
+                ),
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 validator: (value) {
                   if (value == null || value.isEmpty) return null;
-                  return double.tryParse(value) == null ? 'Número inválido' : null;
+                  return double.tryParse(value) == null
+                      ? 'Número inválido'
+                      : null;
                 },
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _taxesController,
-                decoration: const InputDecoration(labelText: 'Impostos (opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Impostos (opcional)',
+                ),
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 validator: (value) {
                   if (value == null || value.isEmpty) return null;
-                  return double.tryParse(value) == null ? 'Número inválido' : null;
+                  return double.tryParse(value) == null
+                      ? 'Número inválido'
+                      : null;
                 },
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _shippingController,
-                decoration: const InputDecoration(labelText: 'Frete (opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Frete (opcional)',
+                ),
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 validator: (value) {
                   if (value == null || value.isEmpty) return null;
-                  return double.tryParse(value) == null ? 'Número inválido' : null;
+                  return double.tryParse(value) == null
+                      ? 'Número inválido'
+                      : null;
                 },
               ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isSubmitting ? null : _submit,
-                child: _isSubmitting
-                    ? const CircularProgressIndicator()
-                    : const Text('Salvar Nota'),
+                child:
+                    _isSubmitting
+                        ? const CircularProgressIndicator()
+                        : const Text('Salvar Nota'),
               ),
             ],
           ),

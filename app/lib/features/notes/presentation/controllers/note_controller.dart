@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import '../../../../models/note_model.dart';
 import '../../domain/add_note.dart';
-import '../../domain/get_all_notes.dart';
+import '../../domain/get_all_note.dart';
 import '../../domain/delete_note.dart';
 import '../../domain/update_note.dart';
 
