@@ -2,11 +2,11 @@
 import 'package:provider/provider.dart';
 
 import '/core/services/firestore_service.dart';
-import '../../../notes/data/note_repository.dart';
-import '../../../notes/domain/add_note.dart';
-import '../../../notes/domain/delete_note.dart';
-import '../../../notes/domain/get_all_notes.dart';
-import '../../../notes/domain/update_note.dart';
+import '../../data/note_repository.dart';
+import '../../domain/add_note.dart';
+import '../../domain/delete_note.dart';
+import '../../domain/get_all_notes.dart';
+import '../../domain/update_note.dart';
 import '../controllers/note_controller.dart';
 
 ChangeNotifierProvider<NoteController> noteControllerProvider() {

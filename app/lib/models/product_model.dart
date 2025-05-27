@@ -3,7 +3,7 @@ class ProductModel {
   final String ean;
   final String name;
   final double weight;
-  final String image;
+  final String? image;
   final List<String> categories;
   final String brand;
   final String fabricante;

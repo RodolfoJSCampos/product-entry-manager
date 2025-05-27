@@ -1,10 +1,10 @@
 // lib/features/notes/presentation/controllers/note_controller.dart
 import 'package:flutter/material.dart';
 import '../../../../models/note_model.dart';
-import '../../../notes/domain/add_note.dart';
-import '../../../notes/domain/get_all_notes.dart';
-import '../../../notes/domain/delete_note.dart';
-import '../../../notes/domain/update_note.dart';
+import '../../domain/add_note.dart';
+import '../../domain/get_all_notes.dart';
+import '../../domain/delete_note.dart';
+import '../../domain/update_note.dart';
 
 class NoteController extends ChangeNotifier {
   final AddNote _addNote;
